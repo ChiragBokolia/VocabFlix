@@ -59,7 +59,10 @@ class VideoAndSubsFrame(CTkFrame):
 		self.current_sub_frames.clear()
 		self.current_index = 0
 
-		self._load_subtitles()
+		try:
+			self._load_subtitles()
+		except FileNotFoundError:
+			pass
 
 	def load_subtitle_action(self):
 		# Use PyQt5 file dialog
