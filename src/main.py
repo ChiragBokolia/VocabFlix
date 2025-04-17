@@ -3,12 +3,15 @@ from customtkinter import *
 from info_handler import InfoFrame
 from video_and_subtitles_handler import VideoAndSubsFrame
 
+
 class App(CTk):
 	def __init__(self, title):
 		super().__init__()
 
 		self.title(title)
 		self.geometry("1280x720")
+		self.minsize(1280, 720)
+
 		self.rowconfigure(0, weight=1)
 		self.columnconfigure(1, weight=1)
 
@@ -22,5 +25,5 @@ class App(CTk):
 if __name__ == "__main__":
 	set_appearance_mode("system")
 	set_default_color_theme("blue")
-	app = App("VocabFlix - Project by Chirag 24/A08/048")
+	app = App("VocabFlix")
 	app.mainloop()

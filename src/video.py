@@ -1,6 +1,8 @@
-from customtkinter import *
 import vlc
-import os
+import platform
+
+from customtkinter import *
+
 
 class VideoFrame(CTkFrame):
 	def __init__(self, master):
@@ -19,21 +21,20 @@ class VideoFrame(CTkFrame):
 		self.instance = vlc.Instance("--no-video-title-show", "--no-sub-autodetect-file")
 		self.player = self.instance.media_player_new()
 
-		self.video_path = None
 
-	def load(self):
-		if not self.video_path:
-			return
-
-		media = self.instance.media_new(self.video_path)
+	def load(self, video_path):
+		media = self.instance.media_new(video_path)
 		self.player.set_media(media)
 
-		if os.name == 'nt':
+		if platform.system() == 'Windows':
 			self.player.set_hwnd(self.canvas.winfo_id())
-		else:
+		elif platform.system() == 'Linux':
 			self.player.set_xwindow(self.canvas.winfo_id())
+		elif platform.system() == 'Darwin':
+			self.player.set_nsobject(self.canvas.winfo_id())
 
 		self.player.play()
+
 
 	def pause_play(self):
 		self.player.pause()

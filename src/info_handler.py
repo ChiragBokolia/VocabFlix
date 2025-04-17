@@ -1,9 +1,11 @@
-from customtkinter import *
+import re
 import os
 import threading
+
+from customtkinter import *
 import requests
 from bs4 import BeautifulSoup
-import re
+
 
 class InfoFrame(CTkFrame):
 	def __init__(self, master):
@@ -11,22 +13,23 @@ class InfoFrame(CTkFrame):
 		self.rowconfigure(1, weight=1)
 		self.columnconfigure(0, weight=1)
 
-		# Use CTkTextbox instead of Label
 		self.textbox = CTkTextbox(self, font=("Arial", 16), wrap="word")
 		self.textbox.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
-		self.textbox.configure(state="disabled")  # Make read-only by default
+		self.textbox.configure(state="disabled")
 
 		self.definitions_cache = {}
 
-	def change(self, word):
-		self._set_text(f"{word}: Loading...")
-		threading.Thread(target=self._fetch_and_update, args=(word,), daemon=True).start()
 
-	def _fetch_and_update(self, word):
-		clean_word = re.sub(r'[^a-zA-Z]', '', word).lower()
+	def set_text(self, text):
+		self.textbox.configure(state="normal")
+		self.textbox.delete("1.0", "end")
+		self.textbox.insert("1.0", text)
+		self.textbox.configure(state="disabled")
 
+
+	def _fetch_and_update(self, clean_word):
 		if not clean_word:
-			self._set_text(f"{word}: (Invalid word)")
+			self.set_text(f"{clean_word}: (Invalid word)")
 			return
 
 		if clean_word in self.definitions_cache:
@@ -35,16 +38,8 @@ class InfoFrame(CTkFrame):
 			definition = self.get_definition(clean_word)
 			self.definitions_cache[clean_word] = definition
 
-		self._set_text(f"{clean_word}:\n\n{definition}")
+		self.set_text(f"{clean_word}:\n\n{definition}")
 
-	def _set_text(self, text):
-		self.textbox.configure(state="normal")
-		self.textbox.delete("1.0", "end")
-		self.textbox.insert("1.0", text)
-		self.textbox.configure(state="disabled")
-
-	def clear(self):
-		self._set_text("")
 
 	def get_definition(self, word):
 		url = f"https://www.vocabulary.com/dictionary/{word}"
@@ -96,3 +91,8 @@ class InfoFrame(CTkFrame):
 		except Exception as e:
 			return f"Error: {str(e)}"
 
+
+	def change(self, word):
+		clean_word = re.sub(r'[^a-zA-Z]', '', word).lower()
+		self.set_text(f"{clean_word}: Loading...")
+		threading.Thread(target=self._fetch_and_update, args=(clean_word,), daemon=True).start()
