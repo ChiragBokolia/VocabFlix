@@ -2,6 +2,7 @@
 #### Learning and entertainment together
 
 ![VocabFlix Screenshot](resources/demo.png)
+***(credits for video in this demo screenshot: [Kurzgesagt – In a Nutshell](https://www.youtube.com/channel/UCsXVk37bltHxD1rDPwtNM8Q))***
 
 **VocabFlix** is a smart video player built with `customtkinter` and `VLC` designed to help users improve their vocabulary while watching videos with subtitles. Hovering over any word in the subtitles shows you its meaning, part of speech, example usage, and even synonyms—fetched live from [vocabulary.com](https://www.vocabulary.com).
 
