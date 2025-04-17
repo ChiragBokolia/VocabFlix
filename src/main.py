@@ -15,11 +15,20 @@ class App(CTk):
 		self.rowconfigure(0, weight=1)
 		self.columnconfigure(1, weight=1)
 
-		info_frame = InfoFrame(self)
-		info_frame.grid(row=0, column=1, padx=(0,10), pady=10, sticky="nsew")
+		self.info_frame = InfoFrame(self)
+		self.info_frame.grid(row=0, column=1, padx=(0,10), pady=10, sticky="nsew")
 
-		video_and_subs_frame = VideoAndSubsFrame(self, info_frame)
-		video_and_subs_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ns")
+		self.video_and_subs_frame = VideoAndSubsFrame(self, self.info_frame)
+		self.video_and_subs_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ns")
+
+		self.protocol("WM_DELETE_WINDOW", self.on_close)
+
+
+	def on_close(self):
+		self.video_and_subs_frame.video_frame.player.stop()
+		self.video_and_subs_frame.video_frame.player.release()
+		self.video_and_subs_frame.video_frame.instance.release()
+		self.destroy()
 
 
 if __name__ == "__main__":

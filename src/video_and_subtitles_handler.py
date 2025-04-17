@@ -21,7 +21,7 @@ class VideoAndSubsFrame(CTkFrame):
 		self.video_frame.grid(row=1, column=0, padx=10, pady=10, sticky="n", columnspan=2)
 
 		self.subtitle_container = CTkFrame(self, fg_color="transparent")
-		self.subtitle_container.grid(row=2, column=0, padx=10, pady=(0, 10), sticky="n", columnspan=2)
+		self.subtitle_container.grid(row=2, column=0, padx=10, pady=10, sticky="n", columnspan=2)
 
 		self.info_frame = info_frame
 
@@ -30,9 +30,8 @@ class VideoAndSubsFrame(CTkFrame):
 		self.current_index = 0
 
 		self.update_subs()
-		self.update_time_label()
 
-		self.info_frame.set_text("Click on the `Load Video` button to play a video!")
+		self.info_frame.set_text("[ Click on the `Load Video` button to play a video! ]")
 
 
 	def load_video_action(self):
@@ -54,7 +53,7 @@ class VideoAndSubsFrame(CTkFrame):
 			except FileNotFoundError:
 				self.info_frame.set_text("Subtitles file not found!")
 
-		self.info_frame.set_text("Hover on a word in the subtitles to get the definition!")
+		self.info_frame.set_text("[ Hover on a word in the subtitles to get the definition here! ]")
 
 
 	def load_subtitle_action(self):
@@ -85,14 +84,12 @@ class VideoAndSubsFrame(CTkFrame):
 			for block in blocks:
 				lines = block.strip().split('\n')
 				if is_vtt:
-					if not lines or '-->' not in lines[0]:
-						continue
+					if not lines or '-->' not in lines[0]: continue
 
 					timing_line = lines[0]
 					text_lines = lines[1:]
 
 					start_str, end_str = timing_line.split(' --> ')
-					# Convert . to , for compatibility with _to_ms
 					start_str = start_str.strip().split(' ')[0].replace('.', ',')
 					end_str = end_str.strip().split(' ')[0].replace('.', ',')
 
@@ -121,6 +118,10 @@ class VideoAndSubsFrame(CTkFrame):
 				self._clear_current_subs_frames()
 				self.current_index += 1
 
+			elif self.current_index > 0 and time < sub["start"]:
+				self._clear_current_subs_frames()
+				self.current_index -= 1
+
 			elif sub["start"] <= time <= sub["end"]:
 				if not self.current_sub_frames:
 					self._clear_current_subs_frames()
@@ -130,18 +131,7 @@ class VideoAndSubsFrame(CTkFrame):
 						sub_frame.grid(row=i, column=0, pady=(0 if i == 0 else 5, 0), sticky="n")
 						self.current_sub_frames.append(sub_frame)
 
-		self.after(100, self.update_subs)
-
-
-	def update_time_label(self):
-		total_time = self.video_frame.player.get_length() // 1000
-		current_time = self.video_frame.player.get_time() // 1000
-
-		current_time_formatted = f"{current_time // 60:02}:{current_time % 60:02}"
-		total_time_formatted = f"{total_time // 60:02}:{total_time % 60:02}"
-
-		self.video_frame.time_label.configure(text=f"{current_time_formatted} / {total_time_formatted}")
-		self.after(100, self.update_time_label)
+		self.after(10, self.update_subs)
 
 
 	def _to_ms(self, srt_time):
